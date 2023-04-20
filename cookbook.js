@@ -13,7 +13,7 @@ class Cookbook {
   
   addRecipe(recipe) {
     this.recipes.push(recipe);
-    this.saveCSV();
+    // this.saveCSV();
   }
   
   loadCSV() { 
@@ -65,13 +65,18 @@ class Cookbook {
 
 let cookbook = new Cookbook('recipes.csv');
 
-console.log(cookbook);
+// console.log(cookbook);
 
-// console.log(cookbook.recipes);
 
-module.exports = Cookbook;
+// module.exports = Cookbook;
 
 cookbook.addRecipe(new Recipe("Pizza", 4, "Delicious"));
+cookbook.addRecipe(new Recipe("Pasta", 5, "Delicious"));
+cookbook.addRecipe(new Recipe("Burger", 3, "Delicious"));
+cookbook.addRecipe(new Recipe("Salad", 2, "Delicious"));
+
+console.log(cookbook.recipes);
+
 
 
 
