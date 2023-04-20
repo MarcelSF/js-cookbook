@@ -1,34 +1,59 @@
 const Recipe = require('./recipe');
 const fs = require('fs'); // This is a Node.js module
 const csv = require('csv-parser'); // This is a Node.js module
+const createCsvWriter = require('csv-writer').createObjectCsvWriter; // This is a Node.js module
 
 class Cookbook {
+  
   constructor(csv_path) {
     this.recipes = [];
     this.csv_path = csv_path;
     this.loadCSV()
   }
-
+  
   addRecipe(recipe) {
     this.recipes.push(recipe);
+    this.saveCSV();
   }
-
+  
   loadCSV() { 
     console.log('Loading CSV')
     fs.createReadStream('recipes.csv')
-      .pipe(csv())
-      .on('data', (row) => {
-        let recipe = new Recipe(row.name, row.rating, row.description);
-        this.addRecipe(recipe);
-      })
-      .on('end', () => {
-        console.log("CSV has been loaded. Here are the available recipes:")
-        this.printRecipes();
-      });
+    .pipe(csv())
+    .on('data', (row) => {
+      let recipe = new Recipe(row.name, row.rating, row.description);
+      this.recipes.push(recipe);
+    })
+    .on('end', () => {
+      console.log('CSV file successfully processed');
+      this.printRecipes();
+      console.log(this.recipes)
+    });
   }
 
   saveCSV() {
+    const csvWriter = createCsvWriter({
+      path: "recipes.csv",
+      header: [
+        { id: "name", title: "name" },
+        { id: "rating", title: "rating" },
+        { id: "description", title: "description" }
+      ]
+    });
 
+    const records = this.recipes.map((recipe) => {
+      return {
+        name: recipe.name,
+        rating: recipe.rating,
+        description: recipe.description
+      }
+    })
+
+    csvWriter.writeRecords(records)
+      .then(() => {
+        console.log(this.recipes)
+      });
+      console.log("CSV has been saved.");
   }
 
   printRecipes() {
@@ -38,9 +63,15 @@ class Cookbook {
   )}
 }
 
+let cookbook = new Cookbook('recipes.csv');
+
+console.log(cookbook);
+
+// console.log(cookbook.recipes);
+
 module.exports = Cookbook;
 
-let cookbook = new Cookbook('recipes.csv');
+cookbook.addRecipe(new Recipe("Pizza", 4, "Delicious"));
 
 
 
